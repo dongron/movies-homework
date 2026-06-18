@@ -17,6 +17,12 @@ export type MovieSearchResponse = {
     Response: string;
 };
 
+export type OmdbError = {
+    kind: 'transport' | 'api';
+    status?: number;
+    message: string;
+};
+
 export type FavoriteMovie = {
     id: string;
     title: string;

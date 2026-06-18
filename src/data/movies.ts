@@ -1,5 +1,7 @@
 import type { MovieDetails, MovieSearchResponse } from '@/types/Movie';
 
+import { fetchMovieDetails, searchMovies } from '@/lib/omdb';
+
 export const mockMovieDetails: Record<string, MovieDetails> = {
   tt0108052: {
     Title: "Schindler's List",
@@ -35,9 +37,11 @@ export const mockMovieDetails: Record<string, MovieDetails> = {
   },
 };
 
-export async function getMovieDetails(id: string): Promise<MovieDetails | null> {
-  return mockMovieDetails[id] ?? null;
+export async function getMovieDetails(id: string): Promise<MovieDetails> {
+  return fetchMovieDetails(id);
 }
+
+export { searchMovies };
 
 export const mockMovieSearchResponse: MovieSearchResponse = {
   Search: [
