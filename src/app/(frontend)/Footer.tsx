@@ -1,15 +1,16 @@
 import NavigationLinks from '@/app/(frontend)/NavigationLinks';
-import ThemeSwitch from '@/app/(frontend)/ThemeSwitch';
 
-const NavigationBar = () => {
+const Footer = () => {
   return (
-    <div className='bg-neutral-300 dark:bg-neutral-800'>
+    <div className='mt-20 bg-neutral-300 dark:bg-neutral-800'>
       <div className='mx-auto flex w-full max-w-7xl flex-row items-center justify-between gap-6 px-3 py-2 sm:px-0'>
-        <NavigationLinks />
-        <ThemeSwitch />
+        <div>
+          <div className='px-3 py-2'>Links:</div>
+          <NavigationLinks footer />
+        </div>
       </div>
     </div>
   );
 };
 
-export default NavigationBar;
+export default Footer;
