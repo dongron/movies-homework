@@ -76,6 +76,8 @@ The sitemap includes only the main page. The movies database is too large to gen
 
 Images are not self-hosted (served from an external API), so Next.js image optimization is not available for them.
 
+There is a known bug in the OMDb API where filtering by year combined with any type other than "series" returns incorrect or empty results.
+
 ## Key Dependencies
 
 | Dependency | Purpose |
