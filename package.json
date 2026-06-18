@@ -11,7 +11,9 @@
     "lint": "next lint",
     "lint:fix": "eslint --fix \"src/**/*.{js,jsx,ts,tsx}\"",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@hookform/resolvers": "5.4.0",
@@ -73,21 +75,27 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "4.3.1",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@trivago/prettier-plugin-sort-imports": "6.0.2",
     "@types/node": "25.9.3",
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "^6.0.2",
     "baseline-browser-mapping": "2.10.37",
     "eslint": "10.5.0",
     "eslint-config-next": "16.2.9",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-tailwindcss": "3.18.3",
+    "jsdom": "^29.1.1",
     "postcss": "8.5.15",
     "prettier": "3.8.4",
     "prettier-plugin-tailwindcss": "0.8.0",
     "tailwindcss": "4.3.1",
     "tailwindcss-animate": "1.0.7",
-    "typescript": "6.0.3"
+    "typescript": "6.0.3",
+    "vitest": "^4.1.9"
   },
   "trustedDependencies": [
     "unrs-resolver"
