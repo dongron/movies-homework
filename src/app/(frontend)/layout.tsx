@@ -9,7 +9,7 @@ import Footer from '@/app/(frontend)/Footer';
 import NavigationBar from '@/app/(frontend)/NavigationBar';
 import '@/app/globals.css';
 import { SITE_DESCRIPTION, SITE_NAME, siteUrl } from '@/lib/site';
-import { Toaster } from '@/registry/new-york-v4/ui/sonner';
+
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -52,7 +52,6 @@ const Layout = ({ children }: Readonly<{ children: ReactNode }>) => {
           </a>
           <NavigationBar />
           <div className='px-3 py-4 md:px-6 flex-1'>{children}</div>
-          <Toaster />
           <Footer />
         </ThemeProvider>
       </body>
