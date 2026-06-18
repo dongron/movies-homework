@@ -1,20 +1,31 @@
-import type { OmdbError } from '@/types/Movie';
-
 import MovieResults from '@/app/(frontend)/MovieResults';
+import MoviePagination from '@/components/movies/MoviePagination';
 import { searchMovies } from '@/lib/omdb';
+import type { MovieType, OmdbError } from '@/types/Movie';
 
 type MovieResultsSectionProps = {
   searchTerm: string;
   pageNumber: number;
+  type?: MovieType;
+  year?: number;
 };
 
-const MovieResultsSection = async ({
-  searchTerm,
-  pageNumber,
-}: MovieResultsSectionProps) => {
+const MovieResultsSection = async ({ searchTerm, pageNumber, type, year }: MovieResultsSectionProps) => {
   try {
-    const response = await searchMovies(searchTerm, pageNumber);
-    return <MovieResults movies={response.Search} />;
+    const response = await searchMovies({ searchTerm, page: pageNumber, type, year });
+    const totalResults = Number(response.totalResults) || 0;
+    return (
+      <>
+        <MovieResults movies={response.Search} />
+        <MoviePagination
+          totalResults={totalResults}
+          pageNumber={pageNumber}
+          searchTerm={searchTerm}
+          type={type}
+          year={year}
+        />
+      </>
+    );
   } catch (cause) {
     const error: OmdbError =
       cause && typeof cause === 'object' && 'kind' in cause

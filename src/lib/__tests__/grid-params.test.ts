@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { canonicalizeGridParams, setGridFilter } from '@/lib/grid-params';
 
-import { canonicalizeGridParams } from '@/lib/grid-params';
+import { describe, expect, it } from 'vitest';
 
 describe('canonicalizeGridParams', () => {
   describe('defaults', () => {
@@ -10,7 +10,7 @@ describe('canonicalizeGridParams', () => {
         searchTerm: 'list',
         pageNumber: 1,
         canonical: '/?s=list&page=1',
-        needsRedirect: true,
+        needsRedirect: true
       });
     });
 
@@ -34,7 +34,7 @@ describe('canonicalizeGridParams', () => {
         searchTerm: 'batman',
         pageNumber: 2,
         canonical: '/?s=batman&page=2',
-        needsRedirect: false,
+        needsRedirect: false
       });
     });
 
@@ -135,5 +135,133 @@ describe('canonicalizeGridParams', () => {
       expect(result.pageNumber).toBe(1);
       expect(result.needsRedirect).toBe(true);
     });
+  });
+
+  describe('year filter', () => {
+    it('passes a valid 4-digit year through and includes it in the canonical URL', () => {
+      const result = canonicalizeGridParams('batman', '2', undefined, '2008');
+      expect(result.year).toBe(2008);
+      expect(result.canonical).toBe('/?s=batman&y=2008&page=2');
+      expect(result.needsRedirect).toBe(false);
+    });
+
+    it('omits year from the canonical URL when absent', () => {
+      const result = canonicalizeGridParams('batman', '2');
+      expect(result.year).toBeUndefined();
+      expect(result.canonical).toBe('/?s=batman&page=2');
+    });
+
+    it('drops an out-of-range year (too low) and flags a redirect', () => {
+      const result = canonicalizeGridParams('list', '1', undefined, '1899');
+      expect(result.year).toBeUndefined();
+      expect(result.needsRedirect).toBe(true);
+    });
+
+    it('drops an out-of-range year (future) and flags a redirect', () => {
+      const result = canonicalizeGridParams('list', '1', undefined, '2099');
+      expect(result.year).toBeUndefined();
+      expect(result.needsRedirect).toBe(true);
+    });
+
+    it('drops a non-numeric year and flags a redirect', () => {
+      const result = canonicalizeGridParams('list', '1', undefined, 'abc');
+      expect(result.year).toBeUndefined();
+      expect(result.needsRedirect).toBe(true);
+    });
+
+    it('drops an empty year and flags a redirect', () => {
+      const result = canonicalizeGridParams('list', '1', undefined, '');
+      expect(result.year).toBeUndefined();
+      expect(result.needsRedirect).toBe(true);
+    });
+
+    it('accepts the minimum year (1900)', () => {
+      const result = canonicalizeGridParams('list', '1', undefined, '1900');
+      expect(result.year).toBe(1900);
+    });
+
+    it('accepts the current year', () => {
+      const currentYear = new Date().getFullYear();
+      const result = canonicalizeGridParams('list', '1', undefined, String(currentYear));
+      expect(result.year).toBe(currentYear);
+    });
+  });
+
+  describe('combined year and type in canonical URL', () => {
+    it('orders as s, type, y, page', () => {
+      const result = canonicalizeGridParams('batman', '1', 'movie', '2008');
+      expect(result.canonical).toBe('/?s=batman&type=movie&y=2008&page=1');
+    });
+
+    it('includes only type when year is absent', () => {
+      const result = canonicalizeGridParams('batman', '1', 'series');
+      expect(result.canonical).toBe('/?s=batman&type=series&page=1');
+    });
+
+    it('includes only year when type is absent', () => {
+      const result = canonicalizeGridParams('batman', '1', undefined, '2005');
+      expect(result.canonical).toBe('/?s=batman&y=2005&page=1');
+    });
+  });
+
+  describe('type filter', () => {
+    it('passes a valid type through and includes it in the canonical URL', () => {
+      const result = canonicalizeGridParams('batman', '2', 'series');
+      expect(result.type).toBe('series');
+      expect(result.canonical).toBe('/?s=batman&type=series&page=2');
+      expect(result.needsRedirect).toBe(false);
+    });
+
+    it('accepts movie and episode types', () => {
+      expect(canonicalizeGridParams('list', '1', 'movie').type).toBe('movie');
+      expect(canonicalizeGridParams('list', '1', 'episode').type).toBe('episode');
+    });
+
+    it('omits type from the canonical URL when absent', () => {
+      const result = canonicalizeGridParams('batman', '2');
+      expect(result.type).toBeUndefined();
+      expect(result.canonical).toBe('/?s=batman&page=2');
+    });
+
+    it('drops an invalid type and flags a redirect', () => {
+      const result = canonicalizeGridParams('list', '1', 'bogus');
+      expect(result.type).toBeUndefined();
+      expect(result.canonical).toBe('/?s=list&page=1');
+      expect(result.needsRedirect).toBe(true);
+    });
+
+    it('drops an empty type and flags a redirect', () => {
+      const result = canonicalizeGridParams('list', '1', '');
+      expect(result.type).toBeUndefined();
+      expect(result.needsRedirect).toBe(true);
+    });
+  });
+});
+
+describe('setGridFilter', () => {
+  it('sets the key and resets paging by dropping page', () => {
+    const next = setGridFilter(new URLSearchParams('s=batman&page=5'), 'type', 'movie');
+    expect(next.get('type')).toBe('movie');
+    expect(next.has('page')).toBe(false);
+    expect(next.get('s')).toBe('batman');
+  });
+
+  it('removes the key when the value is null', () => {
+    const next = setGridFilter(new URLSearchParams('s=batman&type=movie&page=3'), 'type', null);
+    expect(next.has('type')).toBe(false);
+    expect(next.has('page')).toBe(false);
+    expect(next.get('s')).toBe('batman');
+  });
+
+  it('removes the key when the value is an empty string', () => {
+    const next = setGridFilter(new URLSearchParams('type=movie'), 'type', '');
+    expect(next.has('type')).toBe(false);
+  });
+
+  it('does not mutate the input params', () => {
+    const input = new URLSearchParams('type=movie&page=2');
+    setGridFilter(input, 'type', 'series');
+    expect(input.get('type')).toBe('movie');
+    expect(input.get('page')).toBe('2');
   });
 });

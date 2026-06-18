@@ -1,12 +1,15 @@
-import type {
-  MovieDetails,
-  MovieSearchResponse,
-  OmdbError,
-} from '@/types/Movie';
+import type { MovieDetails, MovieSearchResponse, MovieType, OmdbError } from '@/types/Movie';
 
-type SearchParams = { s: string; page?: number };
+type SearchParams = { s: string; page?: number; type?: MovieType; year?: number };
 type DetailsParams = { i: string };
 type OmdbParams = SearchParams | DetailsParams;
+
+type SearchMoviesOptions = {
+  searchTerm: string;
+  page?: number;
+  type?: MovieType;
+  year?: number;
+};
 
 function normalizeBase(base: string): string {
   return base.endsWith('/') ? base : `${base}/`;
@@ -20,6 +23,8 @@ export function buildOmdbUrl(params: OmdbParams): string {
   if ('s' in params) {
     search.set('s', params.s);
     search.set('page', String(params.page ?? 1));
+    if (params.type) search.set('type', params.type);
+    if (params.year) search.set('y', String(params.year));
   } else {
     search.set('i', params.i);
   }
@@ -65,10 +70,15 @@ function assertApiResponse(payload: Record<string, unknown>): void {
   }
 }
 
-export async function searchMovies(searchTerm: string, page = 1): Promise<MovieSearchResponse> {
+export async function searchMovies({
+  searchTerm,
+  page = 1,
+  type,
+  year
+}: SearchMoviesOptions): Promise<MovieSearchResponse> {
   let response: Response;
   try {
-    response = await fetch(buildOmdbUrl({ s: searchTerm, page }));
+    response = await fetch(buildOmdbUrl({ s: searchTerm, page, type, year }));
   } catch (cause) {
     if (isOmdbError(cause)) throw cause;
     throw transportError(0, cause instanceof Error ? cause.message : 'OMDB request failed');
