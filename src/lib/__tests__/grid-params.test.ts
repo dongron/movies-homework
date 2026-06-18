@@ -4,25 +4,25 @@ import { describe, expect, it } from 'vitest';
 
 describe('canonicalizeGridParams', () => {
   describe('defaults', () => {
-    it('defaults missing s and page to "list" and 1, flagging a redirect', () => {
+    it('defaults missing s and page to empty search and page 1, without redirecting', () => {
       const result = canonicalizeGridParams(undefined, undefined);
       expect(result).toEqual({
-        searchTerm: 'list',
+        searchTerm: '',
         pageNumber: 1,
-        canonical: '/?s=list&page=1',
-        needsRedirect: true
+        canonical: '/?page=1',
+        needsRedirect: false
       });
     });
 
-    it('defaults empty s to "list"', () => {
+    it('treats explicit empty s as empty string without redirecting', () => {
       const result = canonicalizeGridParams('', undefined);
-      expect(result.searchTerm).toBe('list');
-      expect(result.needsRedirect).toBe(true);
+      expect(result.searchTerm).toBe('');
+      expect(result.needsRedirect).toBe(false);
     });
 
-    it('defaults whitespace-only s to "list"', () => {
+    it('defaults whitespace-only s to empty string and flags a redirect', () => {
       const result = canonicalizeGridParams('   ', undefined);
-      expect(result.searchTerm).toBe('list');
+      expect(result.searchTerm).toBe('');
       expect(result.needsRedirect).toBe(true);
     });
   });
@@ -43,28 +43,34 @@ describe('canonicalizeGridParams', () => {
       expect(result.needsRedirect).toBe(false);
       expect(result.canonical).toBe('/?s=list&page=1');
     });
+
+    it('treats bare "/" with no params as no redirect', () => {
+      const result = canonicalizeGridParams(undefined, undefined);
+      expect(result.needsRedirect).toBe(false);
+      expect(result.canonical).toBe('/?page=1');
+    });
   });
 
   describe('normalization', () => {
     it('trims whitespace from s and flags a redirect', () => {
-      const result = canonicalizeGridParams(' list ', '1');
-      expect(result.searchTerm).toBe('list');
-      expect(result.canonical).toBe('/?s=list&page=1');
-      expect(result.needsRedirect).toBe(true);
-    });
-
-    it('adds missing page (defaults to 1) and flags a redirect', () => {
-      const result = canonicalizeGridParams('batman', undefined);
-      expect(result.pageNumber).toBe(1);
+      const result = canonicalizeGridParams(' batman ', '1');
+      expect(result.searchTerm).toBe('batman');
       expect(result.canonical).toBe('/?s=batman&page=1');
       expect(result.needsRedirect).toBe(true);
     });
 
-    it('adds missing s (defaults to "list") while preserving a provided page', () => {
+    it('fills missing page with default 1 without redirecting', () => {
+      const result = canonicalizeGridParams('batman', undefined);
+      expect(result.pageNumber).toBe(1);
+      expect(result.canonical).toBe('/?s=batman&page=1');
+      expect(result.needsRedirect).toBe(false);
+    });
+
+    it('fills missing s with empty string while preserving a provided page', () => {
       const result = canonicalizeGridParams(undefined, '3');
-      expect(result.searchTerm).toBe('list');
-      expect(result.canonical).toBe('/?s=list&page=3');
-      expect(result.needsRedirect).toBe(true);
+      expect(result.searchTerm).toBe('');
+      expect(result.canonical).toBe('/?page=3');
+      expect(result.needsRedirect).toBe(false);
     });
 
     it('URL-encodes special characters in s', () => {
@@ -130,10 +136,10 @@ describe('canonicalizeGridParams', () => {
       expect(result.needsRedirect).toBe(true);
     });
 
-    it('treats empty string page as default 1', () => {
+    it('treats empty string page as default 1 without redirecting', () => {
       const result = canonicalizeGridParams('list', '');
       expect(result.pageNumber).toBe(1);
-      expect(result.needsRedirect).toBe(true);
+      expect(result.needsRedirect).toBe(false);
     });
   });
 
@@ -169,10 +175,10 @@ describe('canonicalizeGridParams', () => {
       expect(result.needsRedirect).toBe(true);
     });
 
-    it('drops an empty year and flags a redirect', () => {
+    it('drops an empty year without redirecting', () => {
       const result = canonicalizeGridParams('list', '1', undefined, '');
       expect(result.year).toBeUndefined();
-      expect(result.needsRedirect).toBe(true);
+      expect(result.needsRedirect).toBe(false);
     });
 
     it('accepts the minimum year (1900)', () => {
@@ -230,10 +236,10 @@ describe('canonicalizeGridParams', () => {
       expect(result.needsRedirect).toBe(true);
     });
 
-    it('drops an empty type and flags a redirect', () => {
+    it('drops an empty type without redirecting', () => {
       const result = canonicalizeGridParams('list', '1', '');
       expect(result.type).toBeUndefined();
-      expect(result.needsRedirect).toBe(true);
+      expect(result.needsRedirect).toBe(false);
     });
   });
 });

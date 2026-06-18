@@ -1,7 +1,6 @@
 import { isValidType, normalizeYear } from '@/lib/movie-filters';
 import type { MovieType } from '@/types/Movie';
 
-const DEFAULT_SEARCH = 'list';
 const MIN_PAGE = 1;
 export const MAX_PAGE = 100;
 
@@ -24,8 +23,7 @@ function parsePage(raw: string | undefined): number {
 }
 
 function normalizeSearch(raw: string | undefined): string {
-  const trimmed = (raw ?? '').trim();
-  return trimmed === '' ? DEFAULT_SEARCH : trimmed;
+  return (raw ?? '').trim();
 }
 
 function parseType(raw: string | undefined): MovieType | undefined {
@@ -43,20 +41,19 @@ export function canonicalizeGridParams(
   const type = parseType(rawType);
   const year = normalizeYear(rawYear);
 
-  const typeQuery = type ? `&type=${type}` : '';
-  const yearQuery = year ? `&y=${year}` : '';
-  const canonical = `/?s=${encodeURIComponent(searchTerm)}${typeQuery}${yearQuery}&page=${pageNumber}`;
+  const searchQuery = searchTerm ? `s=${encodeURIComponent(searchTerm)}&` : '';
+  const typeQuery = type ? `type=${type}&` : '';
+  const yearQuery = year ? `y=${year}&` : '';
+  const canonical = `/?${searchQuery}${typeQuery}${yearQuery}page=${pageNumber}`;
 
   // Compare the raw (untrimmed) inputs against their canonical form so that
   // whitespace and missing params trigger a redirect. Next.js hands us
   // already-decoded searchParams, so encoding differences are invisible here
   // (and must not trigger a redirect — that would loop).
-  const searchChanged = rawSearch !== searchTerm;
-  const pageChanged = rawPage !== String(pageNumber);
-  // An invalid or empty type resolves to `undefined`; redirecting drops it from
-  // the URL. A valid type equals its raw form, and an absent one stays absent.
-  const typeChanged = rawType !== type;
-  const yearChanged = rawYear !== (year === undefined ? undefined : String(year));
+  const searchChanged = !!rawSearch && rawSearch !== searchTerm;
+  const pageChanged = !!rawPage && rawPage !== String(pageNumber);
+  const typeChanged = !!rawType && rawType !== type;
+  const yearChanged = !!rawYear && rawYear !== (year === undefined ? undefined : String(year));
 
   return {
     searchTerm,

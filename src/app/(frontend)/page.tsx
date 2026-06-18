@@ -32,10 +32,14 @@ const Page = async ({
 
   return (
     <HomePage>
-      <MovieFilters />
-      <Suspense key={`${searchTerm}-${pageNumber}-${movieType ?? ''}-${year ?? ''}`} fallback={<MovieGridSkeleton />}>
-        <MovieResultsSection searchTerm={searchTerm} pageNumber={pageNumber} type={movieType} year={year} />
-      </Suspense>
+      <MovieFilters searchTerm={searchTerm} type={movieType} year={year} />
+      {searchTerm ? (
+        <Suspense key={`${searchTerm}-${pageNumber}-${movieType ?? ''}-${year ?? ''}`} fallback={<MovieGridSkeleton />}>
+          <MovieResultsSection searchTerm={searchTerm} pageNumber={pageNumber} type={movieType} year={year} />
+        </Suspense>
+      ) : (
+        <p className='text-muted-foreground text-center text-lg'>Type a search phrase to find movies and TV shows.</p>
+      )}
     </HomePage>
   );
 };

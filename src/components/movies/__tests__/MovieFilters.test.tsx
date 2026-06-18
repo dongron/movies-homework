@@ -26,37 +26,43 @@ afterEach(() => {
 
 describe('MovieFilters', () => {
   it('renders a labelled Type select', () => {
-    const { getByRole } = render(<MovieFilters />);
+    const { getByRole } = render(<MovieFilters searchTerm="list" />);
     expect(getByRole('combobox', { name: 'Type' })).toBeInTheDocument();
   });
 
   it('renders a labelled Year select', () => {
-    const { getByRole } = render(<MovieFilters />);
+    const { getByRole } = render(<MovieFilters searchTerm="list" />);
     expect(getByRole('combobox', { name: 'Year' })).toBeInTheDocument();
   });
 
   it('renders a labelled Search input', () => {
-    const { getByRole } = render(<MovieFilters />);
+    const { getByRole } = render(<MovieFilters searchTerm="list" />);
     expect(getByRole('searchbox', { name: 'Search' })).toBeInTheDocument();
   });
 
   it('seeds the search input from the URL s param', () => {
     currentParams = new URLSearchParams('s=batman&page=1');
-    const { getByRole } = render(<MovieFilters />);
+    const { getByRole } = render(<MovieFilters searchTerm="batman" />);
     expect(getByRole('searchbox', { name: 'Search' })).toHaveValue('batman');
   });
 
-  it('shows the default "list" in the search input when s is the default', () => {
-    currentParams = new URLSearchParams('s=list&page=1');
-    const { getByRole } = render(<MovieFilters />);
-    expect(getByRole('searchbox', { name: 'Search' })).toHaveValue('list');
+  it('shows an empty search input when no search term is set', () => {
+    currentParams = new URLSearchParams();
+    const { getByRole } = render(<MovieFilters searchTerm="" />);
+    expect(getByRole('searchbox', { name: 'Search' })).toHaveValue('');
   });
 
   it('renders without error when all filters are in the URL', () => {
     currentParams = new URLSearchParams('s=batman&type=series&y=2008&page=3');
-    const { getByRole } = render(<MovieFilters />);
+    const { getByRole } = render(<MovieFilters searchTerm="batman" type="series" year={2008} />);
     expect(getByRole('combobox', { name: 'Type' })).toBeInTheDocument();
     expect(getByRole('combobox', { name: 'Year' })).toBeInTheDocument();
+    expect(getByRole('searchbox', { name: 'Search' })).toHaveValue('batman');
+  });
+
+  it('uses server props for initial render when URL params are absent', () => {
+    currentParams = new URLSearchParams();
+    const { getByRole } = render(<MovieFilters searchTerm="batman" />);
     expect(getByRole('searchbox', { name: 'Search' })).toHaveValue('batman');
   });
 });

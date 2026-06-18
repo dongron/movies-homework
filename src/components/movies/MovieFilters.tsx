@@ -8,19 +8,25 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { setGridFilter } from '@/lib/grid-params';
 import { ANY, TYPE_LABELS, TYPE_OPTIONS, yearOptions } from '@/lib/movie-filters';
+import type { MovieType } from '@/types/Movie';
 
 const DEBOUNCE_MS = 500;
 const years = yearOptions();
-const DEFAULT_SEARCH = 'list';
 
-const MovieFilters = () => {
+type MovieFiltersProps = {
+  searchTerm: string;
+  type?: MovieType;
+  year?: number;
+};
+
+const MovieFilters = ({ searchTerm: initialSearch, type: initialType, year: initialYear }: MovieFiltersProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const currentType = searchParams.get('type') ?? ANY;
-  const currentYear = searchParams.get('y') ?? ANY;
-  const currentSearch = searchParams.get('s') ?? DEFAULT_SEARCH;
+  const currentType = searchParams.get('type') ?? (initialType ?? ANY);
+  const currentYear = searchParams.get('y') ?? (initialYear ? String(initialYear) : ANY);
+  const currentSearch = searchParams.get('s') ?? initialSearch;
 
   const [searchValue, setSearchValue] = useState(currentSearch);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
