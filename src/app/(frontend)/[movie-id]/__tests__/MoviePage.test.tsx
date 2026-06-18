@@ -1,24 +1,19 @@
-import { cleanup, render } from '@testing-library/react';
-import { afterEach, describe, expect, it, vi } from 'vitest';
-
 import type { MovieDetails } from '@/types/Movie';
+import { cleanup, render } from '@testing-library/react';
 
 import MoviePage from '../MoviePage';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('next/image', () => ({
-  default: (props: React.ComponentProps<'img'>) => <img {...props} />,
+  default: (props: React.ComponentProps<'img'>) => <img {...props} />
 }));
 
 vi.mock('next/link', () => ({
-  default: ({
-    href,
-    children,
-    ...props
-  }: { href: string; children: React.ReactNode } & React.ComponentProps<'a'>) => (
+  default: ({ href, children, ...props }: { href: string; children: React.ReactNode } & React.ComponentProps<'a'>) => (
     <a href={href} {...props}>
       {children}
     </a>
-  ),
+  )
 }));
 
 afterEach(cleanup);
@@ -42,7 +37,7 @@ const fixture: MovieDetails = {
   Ratings: [
     { Source: 'Internet Movie Database', Value: '9.0/10' },
     { Source: 'Rotten Tomatoes', Value: '98%' },
-    { Source: 'Metacritic', Value: '95/100' },
+    { Source: 'Metacritic', Value: '95/100' }
   ],
   Metascore: '95',
   imdbRating: '9.0',
@@ -53,12 +48,12 @@ const fixture: MovieDetails = {
   BoxOffice: '$96,898,818',
   Production: 'N/A',
   Website: 'N/A',
-  Response: 'True',
+  Response: 'True'
 };
 
 const naPosterFixture: MovieDetails = {
   ...fixture,
-  Poster: 'N/A',
+  Poster: 'N/A'
 };
 
 const naFieldsFixture: MovieDetails = {
@@ -67,7 +62,14 @@ const naFieldsFixture: MovieDetails = {
   Awards: 'N/A',
   DVD: 'N/A',
   Production: 'N/A',
-  Website: 'N/A',
+  Website: 'N/A'
+};
+
+const ongoingSeriesFixture: MovieDetails = {
+  ...fixture,
+  Title: 'The Terminal List',
+  Year: '2022–',
+  Type: 'series'
 };
 
 describe('MoviePage', () => {
@@ -77,11 +79,14 @@ describe('MoviePage', () => {
     expect(getByText('1994')).toBeInTheDocument();
   });
 
+  it('renders "now" as the end year for an ongoing series', () => {
+    const { getByText } = render(<MoviePage movie={ongoingSeriesFixture} />);
+    expect(getByText('2022–now')).toBeInTheDocument();
+  });
+
   it('renders the plot', () => {
     const { getByText } = render(<MoviePage movie={fixture} />);
-    expect(
-      getByText(/industrialist Oskar Schindler/),
-    ).toBeInTheDocument();
+    expect(getByText(/industrialist Oskar Schindler/)).toBeInTheDocument();
   });
 
   it('renders each genre as a separate badge', () => {
@@ -109,9 +114,7 @@ describe('MoviePage', () => {
   });
 
   it('renders a placeholder when poster is N/A', () => {
-    const { getByText, queryByRole } = render(
-      <MoviePage movie={naPosterFixture} />,
-    );
+    const { getByText, queryByRole } = render(<MoviePage movie={naPosterFixture} />);
     expect(getByText('No poster')).toBeInTheDocument();
     expect(queryByRole('img')).not.toBeInTheDocument();
   });
@@ -131,9 +134,7 @@ describe('MoviePage', () => {
     const { getByText } = render(<MoviePage movie={fixture} />);
     expect(getByText('Steven Spielberg')).toBeInTheDocument();
     expect(getByText('Thomas Keneally, Steven Zaillian')).toBeInTheDocument();
-    expect(
-      getByText('Liam Neeson, Ralph Fiennes, Ben Kingsley'),
-    ).toBeInTheDocument();
+    expect(getByText('Liam Neeson, Ralph Fiennes, Ben Kingsley')).toBeInTheDocument();
   });
 
   it('renders box office when not N/A', () => {
@@ -150,16 +151,14 @@ describe('MoviePage', () => {
 
   it('renders awards when not N/A', () => {
     const { getByText } = render(<MoviePage movie={fixture} />);
-    expect(
-      getByText('Won 7 Oscars. 91 wins & 49 nominations total'),
-    ).toBeInTheDocument();
+    expect(getByText('Won 7 Oscars. 91 wins & 49 nominations total')).toBeInTheDocument();
   });
 
   it('hides rated and runtime when N/A', () => {
     const naMetaFixture: MovieDetails = {
       ...fixture,
       Rated: 'N/A',
-      Runtime: 'N/A',
+      Runtime: 'N/A'
     };
     const { queryByText } = render(<MoviePage movie={naMetaFixture} />);
     expect(queryByText('N/A')).not.toBeInTheDocument();

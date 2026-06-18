@@ -1,12 +1,12 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-
 import { STORAGE_KEY } from '@/lib/favorites';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 
 import FavoritesList from '../FavoritesList';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 const movie1 = { id: 'tt0108052', title: "Schindler's List", year: '1994' };
 const movie2 = { id: 'tt0825232', title: 'The Bucket List', year: '2007' };
+const movie3 = { id: 'tt11743610', title: 'The Terminal List', year: '2022–' };
 
 beforeEach(() => {
   localStorage.clear();
@@ -31,6 +31,12 @@ describe('FavoritesList', () => {
     const link2 = screen.getByRole('link', { name: 'The Bucket List' });
     expect(link2).toHaveAttribute('href', '/tt0825232');
     expect(screen.getByText('2007')).toBeInTheDocument();
+  });
+
+  it('renders "now" as the end year for an ongoing series favorite', () => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([movie3]));
+    render(<FavoritesList />);
+    expect(screen.getByText('2022–now')).toBeInTheDocument();
   });
 
   it('shows confirmation dialog before removing', () => {
@@ -85,8 +91,8 @@ describe('FavoritesList', () => {
       window,
       new StorageEvent('storage', {
         key: STORAGE_KEY,
-        newValue: JSON.stringify([movie1]),
-      }),
+        newValue: JSON.stringify([movie1])
+      })
     );
 
     expect(screen.queryByText('No favorites yet.')).not.toBeInTheDocument();
@@ -101,8 +107,8 @@ describe('FavoritesList', () => {
       window,
       new StorageEvent('storage', {
         key: 'some-other-key',
-        newValue: 'irrelevant',
-      }),
+        newValue: 'irrelevant'
+      })
     );
 
     expect(screen.getByText('No favorites yet.')).toBeInTheDocument();

@@ -1,24 +1,19 @@
-import { cleanup, render } from '@testing-library/react';
-import { afterEach, describe, expect, it, vi } from 'vitest';
-
 import type { MovieSearchResult } from '@/types/Movie';
+import { cleanup, render } from '@testing-library/react';
 
 import MovieGrid from '../MovieGrid';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('next/image', () => ({
-  default: (props: React.ComponentProps<'img'>) => <img {...props} />,
+  default: (props: React.ComponentProps<'img'>) => <img {...props} />
 }));
 
 vi.mock('next/link', () => ({
-  default: ({
-    href,
-    children,
-    ...props
-  }: { href: string; children: React.ReactNode } & React.ComponentProps<'a'>) => (
+  default: ({ href, children, ...props }: { href: string; children: React.ReactNode } & React.ComponentProps<'a'>) => (
     <a href={href} {...props}>
       {children}
     </a>
-  ),
+  )
 }));
 
 afterEach(cleanup);
@@ -29,22 +24,22 @@ const moviesFixture: MovieSearchResult[] = [
     Year: '1994',
     imdbID: 'tt0108052',
     Type: 'movie',
-    Poster: 'https://m.media-amazon.com/images/M/poster1.jpg',
+    Poster: 'https://m.media-amazon.com/images/M/poster1.jpg'
   },
   {
     Title: 'The Terminal List',
     Year: '2022–',
     imdbID: 'tt11743610',
     Type: 'series',
-    Poster: 'https://m.media-amazon.com/images/M/poster2.jpg',
+    Poster: 'https://m.media-amazon.com/images/M/poster2.jpg'
   },
   {
     Title: 'Kill List',
     Year: '2011',
     imdbID: 'tt1788391',
     Type: 'movie',
-    Poster: 'N/A',
-  },
+    Poster: 'N/A'
+  }
 ];
 
 describe('MovieGrid', () => {
@@ -59,6 +54,11 @@ describe('MovieGrid', () => {
     expect(getByText("Schindler's List")).toBeInTheDocument();
     expect(getByText('The Terminal List')).toBeInTheDocument();
     expect(getByText('Kill List')).toBeInTheDocument();
+  });
+
+  it('renders "now" as the end year for an ongoing series', () => {
+    const { getByText } = render(<MovieGrid movies={moviesFixture} />);
+    expect(getByText('2022–now')).toBeInTheDocument();
   });
 
   it('links each card to the correct details page', () => {
