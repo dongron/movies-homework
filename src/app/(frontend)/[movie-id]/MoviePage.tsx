@@ -1,9 +1,10 @@
 'use client';
 
+import { useState } from 'react';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useState } from 'react';
 
 import FavoriteButton from '@/components/movies/FavoriteButton';
 import FavoritesList from '@/components/movies/FavoritesList';
@@ -31,7 +32,9 @@ const MoviePage = ({ movie }: { movie: MovieDetails }) => {
   const genres = hasGenres ? movie.Genre.split(', ') : [];
 
   return (
-    <main className='mx-auto mt-6 flex max-w-7xl flex-col justify-center gap-6 px-3 font-[family-name:var(--font-geist-sans)] sm:mt-3 sm:gap-12 sm:px-0'>
+    <main
+      id='main-content'
+      className='mx-auto mt-6 flex max-w-7xl flex-col justify-center gap-6 px-3 font-[family-name:var(--font-geist-sans)] sm:mt-3 sm:gap-12 sm:px-0'>
       <Link href={backHref} className='text-muted-foreground text-sm hover:underline'>
         &larr; Back to movies
       </Link>

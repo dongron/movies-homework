@@ -4,14 +4,12 @@ import { JSX, useEffect, useState } from 'react';
 
 import { useTheme } from 'next-themes';
 
-// Define the type for each switch option
-interface SwitchOption {
-    name: string;
-    value: string;
-    iconSvg: JSX.Element;
-}
+type SwitchOption = {
+  name: string;
+  value: string;
+  iconSvg: JSX.Element;
+};
 
-// Define the data with type annotations
 // prettier-ignore
 const SWITCH_DATA: SwitchOption[] = [
     {
@@ -32,34 +30,34 @@ const SWITCH_DATA: SwitchOption[] = [
 ];
 
 const ThemeSwitch: React.FC = () => {
-    const { theme, setTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
 
-    // State to manage the component mount status
-    const [mounted, setMounted] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-    useEffect(() => setMounted(true), []);
+  useEffect(() => setMounted(true), []);
 
-    return (
-        <div className='w-fit'>
-            <div className='flex w-auto flex-row justify-center overflow-hidden rounded-3xl border border-neutral-200 sm:flex-row dark:border-neutral-700'>
-                {SWITCH_DATA.map((data) => (
-                    <button
-                        key={data.value}
-                        aria-label={data.name}
-                        className={`flex items-center gap-2 px-4 py-2 text-black dark:text-white ${
-                            theme === data.value && mounted ? 'bg-neutral-200 dark:bg-neutral-700' : 'bg-transparent'
-                        } dark:hover:bg-neutral-800`}
-                        onClick={() => {
-                            console.log('Theme:', data.value);
-                            setTheme(data.value);
-                        }}>
-                        {data.iconSvg}
-                        <span className='hidden sm:block'>{data.name}</span>
-                    </button>
-                ))}
-            </div>
-        </div>
-    );
+  return (
+    <div className='w-fit' role='group' aria-label='Theme'>
+      <div className='flex w-auto flex-row justify-center overflow-hidden rounded-3xl border border-neutral-200 sm:flex-row dark:border-neutral-700'>
+        {SWITCH_DATA.map((data) => {
+          const active = mounted && theme === data.value;
+          return (
+            <button
+              key={data.value}
+              aria-label={data.name}
+              aria-pressed={active}
+              className={`flex items-center gap-2 px-4 py-2 text-black dark:text-white ${
+                active ? 'bg-neutral-200 dark:bg-neutral-700' : 'bg-transparent'
+              } dark:hover:bg-neutral-800`}
+              onClick={() => setTheme(data.value)}>
+              {data.iconSvg}
+              <span className='hidden sm:block'>{data.name}</span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
 };
 
 export default ThemeSwitch;
