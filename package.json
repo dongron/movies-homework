@@ -1,7 +1,7 @@
 {
   "name": "nextjs-16-starter-shadcn",
   "version": "1.0.0",
-  "private": false,
+  "private": true,
   "website": "https://nextjs-16-starter-shadcn.vercel.app/",
   "license": "MIT",
   "scripts": {
@@ -64,7 +64,7 @@
     "react-dom": "19.2.7",
     "react-hook-form": "7.79.0",
     "react-resizable-panels": "4.11.2",
-    "recharts": "3.8.1",
+
     "rimraf": "6.1.3",
     "shadcn": "4.11.0",
     "sonner": "2.0.7",

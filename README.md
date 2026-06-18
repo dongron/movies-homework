@@ -88,5 +88,4 @@ There is a known bug in the OMDb API where filtering by year combined with any t
 | [Tailwind CSS 4](https://tailwindcss.com) | Utility-first CSS |
 | [Shadcn UI](https://ui.shadcn.com) | Component library built on Radix UI |
 | [Vitest](https://vitest.dev) | Unit testing framework |
-| [Recharts](https://recharts.org) | Charting library |
 | [Zod](https://zod.dev) | Schema validation |
