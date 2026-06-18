@@ -103,11 +103,11 @@ describe('canonicalizeGridParams', () => {
       expect(result.needsRedirect).toBe(true);
     });
 
-    it('clamps page above 100 down to 100 (OMDB max)', () => {
+    it('accepts high page numbers without clamping', () => {
       const result = canonicalizeGridParams('list', '999');
-      expect(result.pageNumber).toBe(100);
-      expect(result.canonical).toBe('/?s=list&page=100');
-      expect(result.needsRedirect).toBe(true);
+      expect(result.pageNumber).toBe(999);
+      expect(result.canonical).toBe('/?s=list&page=999');
+      expect(result.needsRedirect).toBe(false);
     });
 
     it('treats non-numeric page as default 1', () => {
@@ -117,7 +117,7 @@ describe('canonicalizeGridParams', () => {
       expect(result.needsRedirect).toBe(true);
     });
 
-    it('accepts page 100 as the upper bound (no redirect if canonical)', () => {
+    it('accepts page 100 without redirect', () => {
       const result = canonicalizeGridParams('list', '100');
       expect(result.pageNumber).toBe(100);
       expect(result.canonical).toBe('/?s=list&page=100');
@@ -139,6 +139,13 @@ describe('canonicalizeGridParams', () => {
     it('treats empty string page as default 1 without redirecting', () => {
       const result = canonicalizeGridParams('list', '');
       expect(result.pageNumber).toBe(1);
+      expect(result.needsRedirect).toBe(false);
+    });
+
+    it('accepts page numbers well above 100 (real totalResults can exceed 1000)', () => {
+      const result = canonicalizeGridParams('test', '500');
+      expect(result.pageNumber).toBe(500);
+      expect(result.canonical).toBe('/?s=test&page=500');
       expect(result.needsRedirect).toBe(false);
     });
   });

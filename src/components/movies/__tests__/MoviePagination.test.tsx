@@ -26,13 +26,11 @@ describe('MoviePagination', () => {
     expect(current).toHaveTextContent('3');
   });
 
-  it('caps at 100 pages even when totalResults implies more', () => {
+  it('shows all pages derived from totalResults without artificial cap', () => {
     const { getAllByRole } = render(<MoviePagination {...baseProps} totalResults={5000} pageNumber={1} />);
     const links = getAllByRole('link');
-    // With 500 pages capped to 100, pagination will show a windowed subset
-    // but the last numbered link should be "100"
     const lastNumberedLink = links[links.length - 2]; // before "next"
-    expect(lastNumberedLink).toHaveTextContent('100');
+    expect(lastNumberedLink).toHaveTextContent('500');
   });
 
   it('preserves search, type and year in page hrefs', () => {
@@ -72,5 +70,26 @@ describe('MoviePagination', () => {
     const { getByLabelText } = render(<MoviePagination {...baseProps} pageNumber={3} />);
     expect(getByLabelText('Go to previous page')).not.toHaveAttribute('aria-disabled');
     expect(getByLabelText('Go to next page')).not.toHaveAttribute('aria-disabled');
+  });
+
+  it('navigates correctly on high page numbers (page 500 of 1082)', () => {
+    const { getByRole, getByLabelText } = render(
+      <MoviePagination searchTerm='test' totalResults={10820} pageNumber={500} />
+    );
+    const current = getByRole('link', { current: 'page' });
+    expect(current).toHaveTextContent('500');
+    expect(getByLabelText('Go to previous page')).toHaveAttribute('href', expect.stringContaining('page=499'));
+    expect(getByLabelText('Go to next page')).toHaveAttribute('href', expect.stringContaining('page=501'));
+  });
+
+  it('disables Next on the last page when totalPages exceeds 100', () => {
+    const { getByLabelText, getAllByRole } = render(
+      <MoviePagination searchTerm='test' totalResults={10820} pageNumber={1082} />
+    );
+    const next = getByLabelText('Go to next page');
+    expect(next).toHaveAttribute('aria-disabled', 'true');
+    const links = getAllByRole('link');
+    const lastNumberedLink = links[links.length - 1];
+    expect(lastNumberedLink).toHaveTextContent('1082');
   });
 });

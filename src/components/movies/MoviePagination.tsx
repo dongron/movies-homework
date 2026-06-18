@@ -7,7 +7,6 @@ import {
   PaginationNext,
   PaginationPrevious
 } from '@/components/ui/pagination';
-import { MAX_PAGE } from '@/lib/grid-params';
 import type { MovieType } from '@/types/Movie';
 
 const RESULTS_PER_PAGE = 10;
@@ -60,7 +59,7 @@ function getPageNumbers(current: number, total: number): (number | 'ellipsis')[]
 }
 
 const MoviePagination = ({ totalResults, pageNumber, searchTerm, type, year }: MoviePaginationProps) => {
-  const totalPages = Math.min(Math.ceil(totalResults / RESULTS_PER_PAGE), MAX_PAGE);
+  const totalPages = Math.ceil(totalResults / RESULTS_PER_PAGE);
 
   if (totalPages <= 1) return null;
 

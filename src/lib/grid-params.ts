@@ -2,7 +2,6 @@ import { isValidType, normalizeYear } from '@/lib/movie-filters';
 import type { MovieType } from '@/types/Movie';
 
 const MIN_PAGE = 1;
-export const MAX_PAGE = 100;
 
 export type CanonicalizedGridParams = {
   searchTerm: string;
@@ -19,7 +18,7 @@ function parsePage(raw: string | undefined): number {
   const parsed = Number.parseFloat(trimmed);
   if (!Number.isFinite(parsed)) return MIN_PAGE;
   const floored = Math.floor(parsed);
-  return Math.min(Math.max(floored, MIN_PAGE), MAX_PAGE);
+  return Math.max(floored, MIN_PAGE);
 }
 
 function normalizeSearch(raw: string | undefined): string {
