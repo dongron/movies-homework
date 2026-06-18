@@ -1,5 +1,5 @@
 import type { MovieSearchResult } from '@/types/Movie';
-import { cleanup, render } from '@testing-library/react';
+import { cleanup, fireEvent, render } from '@testing-library/react';
 
 import MovieCard from '../MovieCard';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -74,6 +74,14 @@ describe('MovieCard', () => {
 
   it('renders a placeholder when poster is N/A', () => {
     const { getByText, queryByRole } = render(<MovieCard movie={noPosterFixture} />);
+    expect(getByText('No poster')).toBeInTheDocument();
+    expect(queryByRole('img')).not.toBeInTheDocument();
+  });
+
+  it('falls back to "No poster" when the poster URL fails to load', () => {
+    const { getByAltText, getByText, queryByRole } = render(<MovieCard movie={movieFixture} />);
+    const img = getByAltText("Schindler's List poster");
+    fireEvent.error(img);
     expect(getByText('No poster')).toBeInTheDocument();
     expect(queryByRole('img')).not.toBeInTheDocument();
   });

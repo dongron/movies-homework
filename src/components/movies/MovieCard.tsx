@@ -1,5 +1,8 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
+import { useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -8,17 +11,19 @@ import type { MovieSearchResult } from '@/types/Movie';
 
 const MovieCard = ({ movie }: { movie: MovieSearchResult }) => {
   const hasPoster = movie.Poster !== 'N/A';
+  const [posterError, setPosterError] = useState(false);
 
   return (
     <Card className='gap-0 overflow-hidden pt-0'>
       <Link href={`/${movie.imdbID}`} className='relative block aspect-[2/3]'>
-        {hasPoster ? (
+        {hasPoster && !posterError ? (
           <Image
             src={movie.Poster}
             alt={`${movie.Title} poster`}
             fill
             className='bg-muted object-contain'
             sizes='(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw'
+            onError={() => setPosterError(true)}
           />
         ) : (
           <div className='bg-muted text-muted-foreground flex h-full items-center justify-center text-sm'>

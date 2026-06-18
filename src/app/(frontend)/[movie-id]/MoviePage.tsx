@@ -1,5 +1,8 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
+import { useState } from 'react';
 
 import FavoriteButton from '@/components/movies/FavoriteButton';
 import FavoritesList from '@/components/movies/FavoritesList';
@@ -20,7 +23,9 @@ const Field = ({ label, value }: { label: string; value: string }) => {
 
 const MoviePage = ({ movie }: { movie: MovieDetails }) => {
   const hasPoster = movie.Poster !== 'N/A';
-  const genres = movie.Genre.split(', ');
+  const [posterError, setPosterError] = useState(false);
+  const hasGenres = movie.Genre !== 'N/A';
+  const genres = hasGenres ? movie.Genre.split(', ') : [];
 
   return (
     <main className='mx-auto mt-6 flex max-w-7xl flex-col justify-center gap-6 px-3 font-[family-name:var(--font-geist-sans)] sm:mt-3 sm:gap-12 sm:px-0'>
@@ -30,13 +35,14 @@ const MoviePage = ({ movie }: { movie: MovieDetails }) => {
 
       <div className='flex flex-col gap-8 md:flex-row'>
         <div className='relative aspect-[2/3] w-full max-w-xs shrink-0'>
-          {hasPoster ? (
+          {hasPoster && !posterError ? (
             <Image
               src={movie.Poster}
               alt={`${movie.Title} poster`}
               fill
               className='bg-muted rounded-lg object-contain'
               sizes='(max-width: 768px) 100vw, 320px'
+              onError={() => setPosterError(true)}
             />
           ) : (
             <div className='bg-muted text-muted-foreground flex h-full items-center justify-center rounded-lg text-sm'>
@@ -68,26 +74,32 @@ const MoviePage = ({ movie }: { movie: MovieDetails }) => {
             </div>
           </div>
 
-          <div className='flex flex-wrap gap-1.5'>
-            {genres.map((genre) => (
-              <Badge key={genre} variant='secondary'>
-                {genre}
-              </Badge>
-            ))}
-          </div>
+          {hasGenres && (
+            <div className='flex flex-wrap gap-1.5'>
+              {genres.map((genre) => (
+                <Badge key={genre} variant='secondary'>
+                  {genre}
+                </Badge>
+              ))}
+            </div>
+          )}
 
           <Card>
             <CardContent className='flex flex-wrap gap-4'>
-              {movie.Ratings.map((rating) => (
-                <div key={rating.Source} className='flex flex-col items-center gap-0.5'>
-                  <span className='text-lg font-bold'>{rating.Value}</span>
-                  <span className='text-muted-foreground text-xs'>{rating.Source}</span>
-                </div>
-              ))}
+              {movie.Ratings.length === 0 ? (
+                <span className='text-muted-foreground text-sm'>No ratings</span>
+              ) : (
+                movie.Ratings.map((rating) => (
+                  <div key={rating.Source} className='flex flex-col items-center gap-0.5'>
+                    <span className='text-lg font-bold'>{rating.Value}</span>
+                    <span className='text-muted-foreground text-xs'>{rating.Source}</span>
+                  </div>
+                ))
+              )}
             </CardContent>
           </Card>
 
-          <p className='text-sm leading-relaxed'>{movie.Plot}</p>
+          <p className='text-sm leading-relaxed'>{movie.Plot === 'N/A' ? 'No description available' : movie.Plot}</p>
 
           <div className='flex flex-col gap-2 border-t pt-4'>
             <Field label='Director' value={movie.Director} />

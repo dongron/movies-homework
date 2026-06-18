@@ -1,5 +1,5 @@
 import type { MovieDetails } from '@/types/Movie';
-import { cleanup, render } from '@testing-library/react';
+import { cleanup, fireEvent, render } from '@testing-library/react';
 
 import MoviePage from '../MoviePage';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -96,6 +96,13 @@ describe('MoviePage', () => {
     expect(getByText('History')).toBeInTheDocument();
   });
 
+  it('hides all genre badges when genre is N/A', () => {
+    const noGenreFixture: MovieDetails = { ...fixture, Genre: 'N/A' };
+    const { queryByText, queryAllByText } = render(<MoviePage movie={noGenreFixture} />);
+    expect(queryByText('N/A')).not.toBeInTheDocument();
+    expect(queryAllByText(/^(Biography|Drama|History)$/)).toHaveLength(0);
+  });
+
   it('renders each rating source and value', () => {
     const { getByText } = render(<MoviePage movie={fixture} />);
     expect(getByText('Internet Movie Database')).toBeInTheDocument();
@@ -115,6 +122,14 @@ describe('MoviePage', () => {
 
   it('renders a placeholder when poster is N/A', () => {
     const { getByText, queryByRole } = render(<MoviePage movie={naPosterFixture} />);
+    expect(getByText('No poster')).toBeInTheDocument();
+    expect(queryByRole('img')).not.toBeInTheDocument();
+  });
+
+  it('falls back to "No poster" when the poster URL fails to load', () => {
+    const { getByAltText, getByText, queryByRole } = render(<MoviePage movie={fixture} />);
+    const img = getByAltText("Schindler's List poster");
+    fireEvent.error(img);
     expect(getByText('No poster')).toBeInTheDocument();
     expect(queryByRole('img')).not.toBeInTheDocument();
   });
@@ -172,5 +187,18 @@ describe('MoviePage', () => {
   it('hides the box office row when box office is N/A', () => {
     const { queryByText } = render(<MoviePage movie={naFieldsFixture} />);
     expect(queryByText('Box Office')).not.toBeInTheDocument();
+  });
+
+  it('renders "No description available" when plot is N/A', () => {
+    const noPlotFixture: MovieDetails = { ...fixture, Plot: 'N/A' };
+    const { getByText, queryByText } = render(<MoviePage movie={noPlotFixture} />);
+    expect(getByText('No description available')).toBeInTheDocument();
+    expect(queryByText('N/A')).not.toBeInTheDocument();
+  });
+
+  it('renders "No ratings" when ratings array is empty', () => {
+    const noRatingsFixture: MovieDetails = { ...fixture, Ratings: [] };
+    const { getByText } = render(<MoviePage movie={noRatingsFixture} />);
+    expect(getByText('No ratings')).toBeInTheDocument();
   });
 });
