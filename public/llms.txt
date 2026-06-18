@@ -1,0 +1,9 @@
+# Movies Database
+
+> Search and explore movies, TV shows and episodes. Browse ratings, cast, plot details and more. Built with Next.js 16, React 19 and Shadcn UI.
+
+## Links
+
+- [Live demo](https://movies-homework.vercel.app): Browse the app
+- [Source code](https://github.com/dongron/movies-homework): GitHub repository
+- [Sitemap](https://movies-homework.vercel.app/sitemap.xml): Site map
