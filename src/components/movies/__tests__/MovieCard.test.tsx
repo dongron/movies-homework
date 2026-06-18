@@ -8,6 +8,10 @@ vi.mock('next/image', () => ({
   default: (props: React.ComponentProps<'img'>) => <img {...props} />
 }));
 
+vi.mock('next/navigation', () => ({
+  useSearchParams: () => new URLSearchParams()
+}));
+
 vi.mock('next/link', () => ({
   default: ({ href, children, ...props }: { href: string; children: React.ReactNode } & React.ComponentProps<'a'>) => (
     <a href={href} {...props}>

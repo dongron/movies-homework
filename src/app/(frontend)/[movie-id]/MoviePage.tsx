@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
 import FavoriteButton from '@/components/movies/FavoriteButton';
@@ -22,6 +23,8 @@ const Field = ({ label, value }: { label: string; value: string }) => {
 };
 
 const MoviePage = ({ movie }: { movie: MovieDetails }) => {
+  const searchParams = useSearchParams();
+  const backHref = searchParams.get('from') ?? '/';
   const hasPoster = movie.Poster !== 'N/A';
   const [posterError, setPosterError] = useState(false);
   const hasGenres = movie.Genre !== 'N/A';
@@ -29,7 +32,7 @@ const MoviePage = ({ movie }: { movie: MovieDetails }) => {
 
   return (
     <main className='mx-auto mt-6 flex max-w-7xl flex-col justify-center gap-6 px-3 font-[family-name:var(--font-geist-sans)] sm:mt-3 sm:gap-12 sm:px-0'>
-      <Link href='/' className='text-muted-foreground text-sm hover:underline'>
+      <Link href={backHref} className='text-muted-foreground text-sm hover:underline'>
         &larr; Back to movies
       </Link>
 

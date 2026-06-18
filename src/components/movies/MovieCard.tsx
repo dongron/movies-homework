@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
@@ -12,10 +13,15 @@ import type { MovieSearchResult } from '@/types/Movie';
 const MovieCard = ({ movie }: { movie: MovieSearchResult }) => {
   const hasPoster = movie.Poster !== 'N/A';
   const [posterError, setPosterError] = useState(false);
+  const searchParams = useSearchParams();
+  const from = searchParams.toString();
+  const detailHref = from
+    ? `/${movie.imdbID}?from=${encodeURIComponent(`/?${from}`)}`
+    : `/${movie.imdbID}`;
 
   return (
     <Card className='gap-0 overflow-hidden pt-0'>
-      <Link href={`/${movie.imdbID}`} className='relative block aspect-[2/3]'>
+      <Link href={detailHref} className='relative block aspect-[2/3]'>
         {hasPoster && !posterError ? (
           <Image
             src={movie.Poster}

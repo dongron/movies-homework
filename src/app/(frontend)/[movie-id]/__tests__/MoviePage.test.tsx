@@ -8,6 +8,11 @@ vi.mock('next/image', () => ({
   default: (props: React.ComponentProps<'img'>) => <img {...props} />
 }));
 
+let mockSearchParams = new URLSearchParams();
+vi.mock('next/navigation', () => ({
+  useSearchParams: () => mockSearchParams
+}));
+
 vi.mock('next/link', () => ({
   default: ({ href, children, ...props }: { href: string; children: React.ReactNode } & React.ComponentProps<'a'>) => (
     <a href={href} {...props}>
@@ -139,10 +144,19 @@ describe('MoviePage', () => {
     expect(queryByText('N/A')).not.toBeInTheDocument();
   });
 
-  it('renders the back link to /', () => {
+  it('renders back link to / when no from param', () => {
+    mockSearchParams = new URLSearchParams();
     const { getByText } = render(<MoviePage movie={fixture} />);
     const link = getByText(/back to movies/i).closest('a');
     expect(link).toHaveAttribute('href', '/');
+  });
+
+  it('renders back link with from param when present', () => {
+    const from = '/?s=batman&type=movie&page=2';
+    mockSearchParams = new URLSearchParams({ from });
+    const { getByText } = render(<MoviePage movie={fixture} />);
+    const link = getByText(/back to movies/i).closest('a');
+    expect(link).toHaveAttribute('href', from);
   });
 
   it('renders director, writer, and actors', () => {
