@@ -17,6 +17,12 @@ export type MovieSearchResponse = {
     Response: string;
 };
 
+export type FavoriteMovie = {
+    id: string;
+    title: string;
+    year: string;
+};
+
 export type MovieDetails = {
     Title: string;
     Year: string;

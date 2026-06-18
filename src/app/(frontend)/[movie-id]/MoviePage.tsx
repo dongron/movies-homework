@@ -3,6 +3,8 @@ import Link from 'next/link';
 
 import type { MovieDetails } from '@/types/Movie';
 
+import FavoriteButton from '@/components/movies/FavoriteButton';
+import FavoritesList from '@/components/movies/FavoritesList';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 
@@ -45,7 +47,12 @@ const MoviePage = ({ movie }: { movie: MovieDetails }) => {
 
         <div className="flex flex-1 flex-col gap-4">
           <div>
-            <h1 className="text-3xl font-bold">{movie.Title}</h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-3xl font-bold">{movie.Title}</h1>
+              <FavoriteButton
+                movie={{ id: movie.imdbID, title: movie.Title, year: movie.Year }}
+              />
+            </div>
             <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
               <span>{movie.Year}</span>
               {movie.Rated !== 'N/A' && (
@@ -94,6 +101,8 @@ const MoviePage = ({ movie }: { movie: MovieDetails }) => {
           </div>
         </div>
       </div>
+
+      <FavoritesList />
     </main>
   );
 };
