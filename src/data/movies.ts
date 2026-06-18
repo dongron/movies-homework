@@ -1,4 +1,43 @@
-import type { MovieSearchResponse } from '@/types/Movie';
+import type { MovieDetails, MovieSearchResponse } from '@/types/Movie';
+
+export const mockMovieDetails: Record<string, MovieDetails> = {
+  tt0108052: {
+    Title: "Schindler's List",
+    Year: '1994',
+    Rated: 'R',
+    Released: '04 Feb 1994',
+    Runtime: '195 min',
+    Genre: 'Biography, Drama, History',
+    Director: 'Steven Spielberg',
+    Writer: 'Thomas Keneally, Steven Zaillian',
+    Actors: 'Liam Neeson, Ralph Fiennes, Ben Kingsley',
+    Plot: 'In German-occupied Poland during World War II, industrialist Oskar Schindler gradually becomes concerned for his Jewish workforce after witnessing their persecution by the Nazis.',
+    Language: 'English, Hebrew, German, Polish, Latin',
+    Country: 'United States',
+    Awards: 'Won 7 Oscars. 91 wins & 49 nominations total',
+    Poster:
+      'https://m.media-amazon.com/images/M/MV5BNjM1ZDQxYWUtMzQyZS00MTE1LWJmZGYtNGUyNTdlYjM3ZmVmXkEyXkFqcGc@._V1_QL75_UX380_CR0,4,380,562_.jpg',
+    Ratings: [
+      { Source: 'Internet Movie Database', Value: '9.0/10' },
+      { Source: 'Rotten Tomatoes', Value: '98%' },
+      { Source: 'Metacritic', Value: '95/100' },
+    ],
+    Metascore: '95',
+    imdbRating: '9.0',
+    imdbVotes: '1,582,378',
+    imdbID: 'tt0108052',
+    Type: 'movie',
+    DVD: 'N/A',
+    BoxOffice: '$96,898,818',
+    Production: 'N/A',
+    Website: 'N/A',
+    Response: 'True',
+  },
+};
+
+export async function getMovieDetails(id: string): Promise<MovieDetails | null> {
+  return mockMovieDetails[id] ?? null;
+}
 
 export const mockMovieSearchResponse: MovieSearchResponse = {
   Search: [
