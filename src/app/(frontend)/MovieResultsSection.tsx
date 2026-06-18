@@ -16,6 +16,11 @@ const MovieResultsSection = async ({ searchTerm, pageNumber, type, year }: Movie
     const totalResults = Number(response.totalResults) || 0;
     return (
       <>
+        <div className='sr-only' aria-live='polite' role='status'>
+          {totalResults === 1
+            ? `1 result found for "${searchTerm}"`
+            : `${totalResults} results found for "${searchTerm}"`}
+        </div>
         <MovieResults movies={response.Search} />
         <MoviePagination
           totalResults={totalResults}
