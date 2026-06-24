@@ -89,3 +89,24 @@ There is a known bug in the OMDb API where filtering by year combined with any t
 | [Shadcn UI](https://ui.shadcn.com) | Component library built on Radix UI |
 | [Vitest](https://vitest.dev) | Unit testing framework |
 | [Zod](https://zod.dev) | Schema validation |
+
+
+-----
+
+## TODO
+
+The biggest issue is that the application does not pass basic verification steps such as build, lint and type-check. The project has errors related to missing dependencies (e.g. recharts) and outdated tooling configuration. Additionally, `package.json` still contains the `next lint` command, which is not supported in Next.js 16, and the ESLint configuration causes errors when running.
+
+The project is clearly based on an existing boilerplate, which is perfectly acceptable. However, it should be brought to a consistent and fully working state, with unused or incomplete elements removed.
+
+There are also quality and organizational concerns:
+
+- Unused environment variables (e.g. `BASE_IMG_API_URL`)
+- Inconsistent naming (`NEXT_PUBLIC_SITE_URL` and `NEXT_PUBLIC_APP_URL` suggest the same purpose, but the distinction is not explained)
+- A very large number of installed Radix UI components without clear justification
+- Inaccuracies in the documentation (e.g. the claim that Next.js cannot optimize images from external sources is incorrect given the framework's capabilities)
+- Lack of consistent code formatting despite Prettier being present, suggesting a broken configuration or the tool not being used
+
+From a functional standpoint, the application also appears unfinished. For example, the homepage does not display favorite movies, which seems like one of the core features of the solution.
+
+In summary, the biggest problem is not individual implementation errors, but the lack of bringing the project to a production-ready state. Before submitting the solution, basic quality aspects should be verified: passing build, lint and type-check, consistent configuration and removal of unused elements.
